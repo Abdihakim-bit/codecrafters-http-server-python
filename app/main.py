@@ -10,8 +10,15 @@ def main():
     server_socket = socket.create_server(("localhost", 4221))
     serveOn = server_socket.accept() # wait for client and store their details
     response = "HTTP/1.1 200 OK\r\n\r\n"
+
     if serveOn is not None:
-        print("",serveOn[1])
+        request = serveOn[0].recv(1024).decode()
+        print("", request)
+        requestParts = request.split("\r\n")
+        if (" / " in requestParts[0]):
+            response = "HTTP/1.1 200 OK\r\n\r\n"
+        else:
+            response = "HTTP/1.1 404 Not Found\r\n\r\n"
         serveOn[0].send(response.encode())
 
 if __name__ == "__main__":
