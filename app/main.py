@@ -25,8 +25,11 @@ def response(request):
             text = echoString[1].split(" ")
             response = "HTTP/1.1 200 OK"+CRLF+"Content-Type: text/plain"+CRLF+"Content-Length: "+str(len(text[0]))+""+(CRLF*2)+text[0]
     elif(" /user-agent" in requestParts[0]):
-        userAgent = requestParts[3].split(": ")
+        userAgent = requestParts[2].split(": ")
+        if ("User-Agent" not in userAgent[0]):
+            userAgent = requestParts[3].split(": ")
         if (userAgent[1] is not None):
+            print("", userAgent[1])
             response = "HTTP/1.1 200 OK"+CRLF+"Content-Type: text/plain"+CRLF+"Content-Length: "+str(len(userAgent[1]))+""+(CRLF*2)+userAgent[1]
     else:
         response = "HTTP/1.1 404 Not Found"+(CRLF*2)
