@@ -22,7 +22,7 @@ def main():
                 text = echoString[1].split(" ")
                 response = "HTTP/1.1 200 OK"+CRLF+"Content-Type: text/plain"+CRLF+"Content-Length: "+str(len(text[0]))+""+(CRLF*2)+text[0]
         else:
-            response = "HTTP/1.1 404 Not Found"+(CRLF)
+            response = "HTTP/1.1 404 Not Found"+(CRLF*2)
         serveOn[0].send(response.encode())
 
 if __name__ == "__main__":
