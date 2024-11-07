@@ -14,7 +14,6 @@ def main():
     # Parse arguments to get the directory
     args = parse_args()
     baseDirectory = args.directory  # Get the directory passed as an argument
-
     # Create a socket server on the local machine to listen on port 4221.
     server_socket = socket.create_server(("localhost", 4221))
     print("Server started on port 4221, serving files from " + baseDirectory)
@@ -33,7 +32,7 @@ def main():
 def parse_args():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="HTTP server to serve files")
-    parser.add_argument("--directory", type=str, help="Directory to serve files from", required=False)
+    parser.add_argument("--directory", type=str, default=str(pathlib.Path().absolute()), help="Directory to serve files from")
     return parser.parse_args()
 
 def handle_client(client_socket, baseDirectory):
