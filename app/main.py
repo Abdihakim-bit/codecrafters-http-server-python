@@ -1,5 +1,5 @@
 import socket  # noqa: F401
-import re
+import threading
 
 CRLF = "\r\n"
 response200 = "HTTP/1.1 200 OK"
@@ -16,14 +16,21 @@ def main():
     try:
         while True:
             serveOn = server_socket.accept() # wait for client and store their details
-            if serveOn is not None:
-                request = serveOn[0].recv(1024).decode()
-                serveOn[0].send(response(request).encode())    
+            client_thread = threading.Thread(target=handle_client, args=(serveOn[0],)) # Declare a thread invoking the handle client function
+            client_thread.daemon = True # Allow the thread to be closed with the program
+            client_thread.start()
     except KeyboardInterrupt:
         server_socket.close()
         print("Shutting down server")
 
-        
+def handle_client(client_socket):
+    try:
+        request = client_socket.recv(1024).decode()
+        if request:
+            client_socket.send(response(request).encode())
+    except Exception as e:
+        print("Error handling client: ", e)
+
     # Parses the user request and returns appropriate response    
 def response(request):
     requestParts = request.split(CRLF)
