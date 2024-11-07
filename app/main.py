@@ -2,6 +2,7 @@ import socket  # noqa: F401
 import threading
 import os
 import pathlib
+import argparse
 
 files = os.listdir()
 CRLF = "\r\n"
@@ -10,30 +11,41 @@ response404 = "HTTP/1.1 404 Not Found"
 contentLength = "Content-Length: "
 
 def main():
+    # Parse arguments to get the directory
+    args = parse_args()
+    baseDirectory = args.directory  # Get the directory passed as an argument
+
     # Create a socket server on the local machine to listen on port 4221.
     server_socket = socket.create_server(("localhost", 4221))
-    print("Server started on port 4221")
+    print("Server started on port 4221, serving files from " + baseDirectory)
+
     try:
         while True:
             serveOn = server_socket.accept() # wait for client and store their details
             print(f"Accepted connection from {serveOn[1]}")
-            client_thread = threading.Thread(target=handle_client, args=(serveOn[0],)) # Declare a thread invoking the handle client function
+            client_thread = threading.Thread(target=handle_client, args=(serveOn[0], baseDirectory)) # Declare a thread invoking the handle client function
             client_thread.daemon = True # Allow the thread to be closed with the program
             client_thread.start()
     except KeyboardInterrupt:
         server_socket.close()
         print("Shutting down server")
 
-def handle_client(client_socket):
+def parse_args():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="HTTP server to serve files")
+    parser.add_argument("--directory", type=str, help="Directory to serve files from", required=True)
+    return parser.parse_args()
+
+def handle_client(client_socket, baseDirectory):
     try:
         request = client_socket.recv(1024).decode()
         if request:
-            client_socket.send(response(request).encode())
+            client_socket.send(response(request, baseDirectory).encode())
     except Exception as e:
         print("Error handling client: ", e)
 
     # Parses the user request and returns appropriate response    
-def response(request):
+def response(request, baseDirectory):
     requestParts = request.split(CRLF)
     if (" / " in requestParts[0]):
         response = response200+(CRLF*2)
@@ -53,7 +65,7 @@ def response(request):
     elif(" /files/" in requestParts[0]):
         contentType = "Content-Type: application/octet-stream"
         filePath = requestParts[0].split("/files/")[1].split(" ")[0]
-        filePath = pathlib.Path(str(filePath))
+        filePath = pathlib.Path(baseDirectory) / filePath  # Construct full path with base directory
         matching_files = file_exists(filePath)
         if matching_files:
             # If a matching file exists, open and read it
