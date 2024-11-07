@@ -33,7 +33,7 @@ def main():
 def parse_args():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="HTTP server to serve files")
-    parser.add_argument("--directory", type=str, help="Directory to serve files from", required=True)
+    parser.add_argument("--directory", type=str, help="Directory to serve files from", required=False)
     return parser.parse_args()
 
 def handle_client(client_socket, baseDirectory):
