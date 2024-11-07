@@ -3,6 +3,7 @@ import threading
 import os
 import pathlib
 import argparse
+import sys
 
 files = os.listdir()
 CRLF = "\r\n"
@@ -11,29 +12,15 @@ response404 = "HTTP/1.1 404 Not Found"
 contentLength = "Content-Length: "
 
 def main():
-    # Parse arguments to get the directory
-    args = parse_args()
-    baseDirectory = args.directory  # Get the directory passed as an argument
-    # Create a socket server on the local machine to listen on port 4221.
-    server_socket = socket.create_server(("localhost", 4221))
+    baseDirectory = sys.argv[2]  # Get the directory passed as an argument
+    server_socket = socket.create_server(("localhost", 4221)) # Create a socket server on the local machine to listen on port 4221.
     print("Server started on port 4221, serving files from " + baseDirectory)
-
-    try:
-        while True:
-            serveOn = server_socket.accept() # wait for client and store their details
-            print(f"Accepted connection from {serveOn[1]}")
-            client_thread = threading.Thread(target=handle_client, args=(serveOn[0], baseDirectory)) # Declare a thread invoking the handle client function
-            client_thread.daemon = True # Allow the thread to be closed with the program
-            client_thread.start()
-    except KeyboardInterrupt:
-        server_socket.close()
-        print("Shutting down server")
-
-def parse_args():
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(description="HTTP server to serve files")
-    parser.add_argument("--directory", type=str, default=str(pathlib.Path().absolute()), help="Directory to serve files from")
-    return parser.parse_args()
+    while True:
+        serveOn = server_socket.accept() # wait for client and store their details
+        print(f"Accepted connection from {serveOn[1]}")
+        client_thread = threading.Thread(target=handle_client, args=(serveOn[0], baseDirectory)) # Declare a thread invoking the handle client function
+        client_thread.daemon = True # Allow the thread to be closed with the program
+        client_thread.start()
 
 def handle_client(client_socket, baseDirectory):
     try:
