@@ -42,44 +42,36 @@ def response(request):
         echoString = requestParts[0].split("/echo/")
         if (echoString[1] is not None):
             text = echoString[1].split(" ")
-            response = response200+CRLF+contentType+CRLF+contentLength+str(len(text[0]))+""+(CRLF*2)+text[0]
+            response = response200+CRLF+contentType+CRLF+contentLength+str(len(text[0]))+(CRLF*2)+text[0]
     elif(" /user-agent" in requestParts[0]):
         contentType = "Content-Type: text/plain"
         userAgent = requestParts[2].split(": ") # Split the third line using ":" and store the results in userAgent
         if ("User-Agent" not in userAgent[0]):
             userAgent = requestParts[3].split(": ") # Split the fourth line instead if "User-Agent" is not in userAgent
         if (userAgent[1] is not None):
-            response = response200+CRLF+contentType+CRLF+contentLength+str(len(userAgent[1]))+""+(CRLF*2)+userAgent[1]
+            response = response200+CRLF+contentType+CRLF+contentLength+str(len(userAgent[1]))+(CRLF*2)+userAgent[1]
     elif(" /files/" in requestParts[0]):
         contentType = "Content-Type: application/octet-stream"
-        filePath = requestParts[0].split("/files/")[1].split(" ")[0].split("/")
-        path = str(pathlib.Path().absolute())
-        directory = ""
-        for index , dir in enumerate(filePath):
-            if (index != len(filePath)-1 and dir_exists(directory)):
-                path = path + "\\" + dir
-            elif (index == len(filePath)-1 and file_exists(path + "\\" + dir) != []):
-                file = open(file_exists(path + "\\" + dir)[0], "r")
+        filePath = requestParts[0].split("/files/")[1].split(" ")[0]
+        filePath = pathlib.Path(str(filePath))
+        matching_files = file_exists(filePath)
+        if matching_files:
+            # If a matching file exists, open and read it
+            with open(matching_files[0], "r") as file:
                 content = file.read()
-                file.close()
-                response = response200+CRLF+contentType+CRLF+contentLength+str(len(content))+""+(CRLF*2)+content
-            elif (index == len(filePath)-1 and file_exists(path) == []):
-                response = response404+(CRLF*2)
-            elif (index != len(filePath)-1 and not dir_exists(directory)):
-                response = response404+(CRLF*2)
-                break
+                response = response200+CRLF+contentType+CRLF+contentLength+str(len(content))+(CRLF*2)+content
+        else:
+            # If no matching file exists, return 404
+            response = response404 + CRLF * 2
     else:
         response = response404+(CRLF*2)
     return response
-# returns True if directory exists, else False
-def dir_exists(directory):
-    try:
-        if (os.listdir(directory)): return True
-    except Exception:
-        return False
-# returns the absolute path of the file in a list if it exists, else returns an empty list
+
+# Returns the absolute path of the file in a list if it exists (with any extension), else returns an empty list
 def file_exists(requestURI):
     filePath = pathlib.Path(requestURI)
-    return (list(filePath.parent.glob(filePath.name + ".*")))
+    # Check for files with any extension
+    matching_files = list(filePath.parent.glob(filePath.name + ".*"))
+    return matching_files
 if __name__ == "__main__":
     main()

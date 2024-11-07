@@ -1,0 +1,13 @@
+Test: Hell yeah!
+            if (index != len(filePath)-1 and dir_exists(directory)):
+                path = path + "\\" + dir
+            elif (index == len(filePath)-1 and file_exists(path + "\\" + dir) != []):
+                file = open(file_exists(path + "\\" + dir)[0], "r")
+                content = file.read()
+                file.close()
+                response = response200+CRLF+contentType+CRLF+contentLength+str(len(content))+""+(CRLF*2)+content
+            elif (index == len(filePath)-1 and file_exists(path) == []):
+                response = response404+(CRLF*2)
+            elif (index != len(filePath)-1 and not dir_exists(directory)):
+                response = response404+(CRLF*2)
+                break
