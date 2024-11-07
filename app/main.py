@@ -65,10 +65,12 @@ def response(request, baseDirectory):
         contentType = "Content-Type: application/octet-stream"
         filePath = requestParts[0].split("/files/")[1].split(" ")[0]
         filePath = pathlib.Path(baseDirectory) / filePath  # Construct full path with base directory
+        # Open file if the filepath exists as is without an extension
         if filePath.exists():
             with open(filePath, "r") as file:
                 content = file.read()
                 response = response200+CRLF+contentType+CRLF+contentLength+str(len(content))+(CRLF*2)+content
+        # Call file_exists for files without an extension
         elif file_exists(filePath) != []:
             matching_files = file_exists(filePath)
             if matching_files:
