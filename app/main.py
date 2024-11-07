@@ -74,7 +74,7 @@ def response(request, baseDirectory):
                 response = response200+CRLF+contentType+CRLF+contentLength+str(len(content))+(CRLF*2)+content
         else:
             # If no matching file exists, return 404
-            response = response404 + CRLF * 2
+            response = response404 + (CRLF*2)
     else:
         response = response404+(CRLF*2)
     return response
