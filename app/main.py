@@ -1,18 +1,20 @@
 import socket  # noqa: F401
 import threading
-import os
 import pathlib
-import argparse
 import sys
 
-files = os.listdir()
+currentPath = pathlib.Path().absolute()
 CRLF = "\r\n"
 response200 = "HTTP/1.1 200 OK"
+response201 = "HTTP/1.1 201 Created"
 response404 = "HTTP/1.1 404 Not Found"
 contentLength = "Content-Length: "
 
 def main():
-    baseDirectory = sys.argv[2]  # Get the directory passed as an argument
+    try:
+        baseDirectory = sys.argv[2]  # Get the directory passed as an argument
+    except:
+        baseDirectory = str(currentPath)
     server_socket = socket.create_server(("localhost", 4221)) # Create a socket server on the local machine to listen on port 4221.
     print("Server started on port 4221, serving files from " + baseDirectory)
     while True:
@@ -52,8 +54,13 @@ def response(request, baseDirectory):
         contentType = "Content-Type: application/octet-stream"
         filePath = requestParts[0].split("/files/")[1].split(" ")[0]
         filePath = pathlib.Path(baseDirectory) / filePath  # Construct full path with base directory
+        # 
+        if("POST" in requestParts[0]):
+            with open(filePath, "w") as file:
+                content = file.write(str(requestParts[len(requestParts)-1]))
+                response = response201+(CRLF*2)
         # Open file if the filepath exists as is without an extension
-        if filePath.exists():
+        elif filePath.exists():
             with open(filePath, "r") as file:
                 content = file.read()
                 response = response200+CRLF+contentType+CRLF+contentLength+str(len(content))+(CRLF*2)+content
