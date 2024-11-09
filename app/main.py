@@ -34,7 +34,12 @@ def handle_client(client_socket, baseDirectory):
 
     # Parses the user request and returns appropriate response    
 def response(request, baseDirectory):
+    supportedEncoding = ["gzip"]
+    contentEncoding = ""
     requestParts = request.split(CRLF)
+    for requestLine in requestParts:
+        if ("accept-encoding" and "gzip" in requestLine.lower()):
+            contentEncoding = "Content-Encoding: " + supportedEncoding[0] + CRLF
     if (" / " in requestParts[0]):
         response = response200+(CRLF*2)
     elif(" /echo/" in requestParts[0]):
@@ -42,19 +47,19 @@ def response(request, baseDirectory):
         echoString = requestParts[0].split("/echo/")
         if (echoString[1] is not None):
             text = echoString[1].split(" ")
-            response = response200+CRLF+contentType+CRLF+contentLength+str(len(text[0]))+(CRLF*2)+text[0]
+            response = response200+CRLF+contentEncoding+contentType+CRLF+contentLength+str(len(text[0]))+(CRLF*2)+text[0]
     elif(" /user-agent" in requestParts[0]):
         contentType = "Content-Type: text/plain"
-        userAgent = requestParts[2].split(": ") # Split the third line using ":" and store the results in userAgent
-        if ("User-Agent" not in userAgent[0]):
-            userAgent = requestParts[3].split(": ") # Split the fourth line instead if "User-Agent" is not in userAgent
-        if (userAgent[1] is not None):
-            response = response200+CRLF+contentType+CRLF+contentLength+str(len(userAgent[1]))+(CRLF*2)+userAgent[1]
+        x = 1
+        while ("user-agent:" not in requestParts[x].lower()):
+            x += 1
+        userAgent = requestParts[x].split(": ") # Split the request part containing "User-Agent" using ":" and store the results in userAgent
+        response = response200+CRLF+contentType+CRLF+contentLength+str(len(userAgent[1]))+(CRLF*2)+userAgent[1]
     elif(" /files/" in requestParts[0]):
         contentType = "Content-Type: application/octet-stream"
         filePath = requestParts[0].split("/files/")[1].split(" ")[0]
         filePath = pathlib.Path(baseDirectory) / filePath  # Construct full path with base directory
-        # 
+        # Write to file if request uses "POST" header 
         if("POST" in requestParts[0]):
             with open(filePath, "w") as file:
                 content = file.write(str(requestParts[len(requestParts)-1]))
