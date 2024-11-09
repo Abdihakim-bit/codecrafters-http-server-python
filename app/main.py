@@ -2,6 +2,7 @@ import socket  # noqa: F401
 import threading
 import pathlib
 import sys
+import gzip
 
 currentPath = pathlib.Path().absolute()
 CRLF = "\r\n"
@@ -28,7 +29,10 @@ def handle_client(client_socket, baseDirectory):
     try:
         request = client_socket.recv(1024).decode()
         if request:
-            client_socket.send(response(request, baseDirectory).encode())
+            res = response(request, baseDirectory)
+            if (isinstance(res, bytes)):
+                client_socket.send(res)
+            else: client_socket.send(res.encode())
     except Exception as e:
         print("Error handling client: ", e)
 
@@ -47,7 +51,10 @@ def response(request, baseDirectory):
         echoString = requestParts[0].split("/echo/")
         if (echoString[1] is not None):
             text = echoString[1].split(" ")
-            response = response200+CRLF+contentEncoding+contentType+CRLF+contentLength+str(len(text[0]))+(CRLF*2)+text[0]
+            if (contentEncoding != ""):
+                text[0] = gzip.compress(text[0].encode())
+                response = (response200+CRLF+contentEncoding+contentType+CRLF+contentLength+str(len(text[0]))+(CRLF*2)).encode()+text[0]
+            else: response = response200+CRLF+contentEncoding+contentType+CRLF+contentLength+str(len(text[0]))+(CRLF*2)+text[0]
     elif(" /user-agent" in requestParts[0]):
         contentType = "Content-Type: text/plain"
         x = 1
