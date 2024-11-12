@@ -1,4 +1,4 @@
-from server import start_server
+from .server import start_server
 import pathlib
 import sys
 
