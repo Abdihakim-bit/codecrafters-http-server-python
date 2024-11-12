@@ -30,8 +30,10 @@ def response(request, base_directory):
 def handle_echo(request_parts, content_encoding):
     content_type = "Content-Type: text/plain"
     echo_string = request_parts[0].split("/echo/")[1].split(" ")[0]
-    content = gzip.compress(echo_string.encode()) if content_encoding else echo_string
-    return response200 + CRLF + content_encoding + content_type + CRLF + contentLength + str(len(content)) + (CRLF * 2) + content
+    if content_encoding:
+        content = gzip.compress(echo_string.encode()) 
+        return (response200 + CRLF + content_encoding + content_type + CRLF + contentLength + str(len(content)) + (CRLF * 2)).encode() + content
+    else: return response200 + CRLF + content_encoding + content_type + CRLF + contentLength + str(len(echo_string)) + (CRLF * 2) + echo_string
 
 def handle_user_agent(request_parts):
     content_type = "Content-Type: text/plain"
