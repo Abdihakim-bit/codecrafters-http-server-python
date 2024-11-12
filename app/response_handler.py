@@ -13,10 +13,12 @@ def response(request, base_directory):
     request_parts = request.split(CRLF)
     content_encoding = ""
     
+    # Check if the client supports gzip encoding
     for line in request_parts:
         if "accept-encoding" in line.lower() and "gzip" in line.lower():
             content_encoding = "Content-Encoding: gzip" + CRLF
             
+    # Handle different types of requests
     if " / " in request_parts[0]:
         return response200 + (CRLF * 2)
     elif " /echo/" in request_parts[0]:
@@ -25,11 +27,15 @@ def response(request, base_directory):
         return handle_user_agent(request_parts)
     elif " /files/" in request_parts[0]:
         return handle_file_request(request_parts, base_directory, content_encoding)
+    
+    # Return a 404 response if no matching route was found
     return response404 + (CRLF * 2)
 
 def handle_echo(request_parts, content_encoding):
     content_type = "Content-Type: text/plain"
     echo_string = request_parts[0].split("/echo/")[1].split(" ")[0]
+
+    # If gzip encoding is requested, compress the content
     if content_encoding:
         content = gzip.compress(echo_string.encode()) 
         return (response200 + CRLF + content_encoding + content_type + CRLF + contentLength + str(len(content)) + (CRLF * 2)).encode() + content
@@ -42,8 +48,11 @@ def handle_user_agent(request_parts):
 
 def handle_file_request(request_parts, base_directory, content_encoding):
     content_type = "Content-Type: application/octet-stream"
+
+    # Extract the requested file path
     file_path = pathlib.Path(base_directory) / request_parts[0].split("/files/")[1].split(" ")[0]
     
+    # Handle file upload (POST request)
     if "POST" in request_parts[0]:
         with open(file_path, "w") as file:
             file.write(request_parts[-1])
