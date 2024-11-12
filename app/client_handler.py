@@ -1,4 +1,4 @@
-from response_handler import response
+from .response_handler import response
 
 def handle_client(client_socket, base_directory):
     try:

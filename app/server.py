@@ -1,6 +1,6 @@
 import socket
 import threading
-from client_handler import handle_client
+from .client_handler import handle_client
 
 def start_server(base_directory):
     server_socket = socket.create_server(("localhost", 4221))

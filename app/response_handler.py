@@ -1,6 +1,6 @@
 import pathlib
 import gzip
-from utils import file_exists
+from .utils import file_exists
 
 CRLF = "\r\n"
 response200 = "HTTP/1.1 200 OK"
