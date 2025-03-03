@@ -33,5 +33,5 @@ The goal was to **understand and implement key HTTP features** from scratch, han
 ---
 
 ## 📚 References
-[CodeCrafters Challenge](https://app.codecrafters.io/courses/http-server/overview)
-[HTTP/1.1 Specification](https://www.rfc-editor.org/rfc/rfc9110.html)
+[CodeCrafters Challenge](https://app.codecrafters.io/courses/http-server/overview).
+[HTTP/1.1 Specification](https://www.rfc-editor.org/rfc/rfc9110.html).
