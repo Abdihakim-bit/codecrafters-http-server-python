@@ -1,27 +1,37 @@
-# 🛠 Build Your Own HTTP Server – CodeCrafters Challenge  
+# 🚀 HTTP Server – CodeCrafters Challenge  
 
 [![progress-banner](https://backend.codecrafters.io/progress/http-server/96da4de6-37e4-455d-967c-ce46f53d0551)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)  
 
-This repository contains my solution for the **["Build Your Own HTTP Server"](https://app.codecrafters.io/courses/http-server/overview)** challenge on [CodeCrafters](https://codecrafters.io).  
+This repository contains my implementation of an **HTTP/1.1 server**, built as part of the [CodeCrafters HTTP Server Challenge](https://app.codecrafters.io/courses/http-server/overview).  
 
-## 📌 About the Challenge  
-
-[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the backbone of the web, enabling communication between clients and servers. In this challenge, I built an **HTTP/1.1 server** capable of handling multiple clients.  
-
-### 🧩 What I Learned  
-✔ **How TCP servers work**  
-✔ **Understanding HTTP request handling** ([RFC 2616 - Section 5](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html))  
-✔ **Handling multiple connections**  
-
-> **Note:** If you're viewing this repo on GitHub, check out [codecrafters.io](https://codecrafters.io) to try the challenge yourself!  
+The goal was to **understand and implement key HTTP features** from scratch, handling requests, responses, and concurrent connections just like a real-world server.  
 
 ---
 
-## 🚀 Getting Started  
+## 🏗 Features  
 
-### ✅ Passing Stage 1  
-The entry point for the HTTP server is in **`app/main.py`**. Uncomment the relevant code and push your changes to pass Stage 1:  
+✔ **Listens on a specified port**  
+✔ **Handles multiple client connections**  
+✔ **Parses HTTP requests and headers**  
+✔ **Responds with appropriate HTTP status codes**  
+✔ **Serves static files**  
+✔ **Reads request bodies for POST requests**  
 
-```sh
-git commit -am "pass 1st stage"  
-git push origin master  
+---
+
+## ✅ Completed Stages  
+
+- **Port Binding** – Open a TCP socket and listen for connections  
+- **Basic HTTP Response** – Return a `200 OK`  
+- **URL Path Extraction** – Parse and respond based on the request path  
+- **Response Body Handling** – Send meaningful responses  
+- **Header Parsing** – Read and interpret incoming request headers  
+- **Concurrent Connections** – Handle multiple clients simultaneously  
+- **Serving Files** – Return static files from the server  
+- **Processing Request Bodies** – Handle incoming `POST` request data  
+
+---
+
+## 📚 References
+CodeCrafters Challenge
+HTTP/1.1 Specification
